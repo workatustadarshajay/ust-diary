@@ -31,6 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <nav className="site-nav" aria-label="Primary navigation">
             <Link href="/">Calendar</Link>
             <Link href="/book">Book</Link>
+            <Link href="/search">Search</Link>
           </nav>
         </header>
         {children}

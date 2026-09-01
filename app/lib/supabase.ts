@@ -14,6 +14,10 @@ export interface DiaryEntry {
   id: string;
   entry_date: string;
   content: string;
+  tags: string[];
+  mood: string | null;
+  prompt: string | null;
+  template: string | null;
   user_id: string;
   created_at: string;
   updated_at: string;
