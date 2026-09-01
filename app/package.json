@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@langchain/core": "^1.2.9",
+    "@langchain/google-genai": "^2.3.0",
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/typography": "^0.5.20",
     "@tiptap/extension-color": "^3.31.0",
