@@ -9,7 +9,6 @@ import TextAlign from "@tiptap/extension-text-align";
 import Highlight from "@tiptap/extension-highlight";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
-import LinkExtension from "@tiptap/extension-link";
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
@@ -17,6 +16,7 @@ import { ArrowLeft, BookOpen, Check, Eye, Expand, History, LoaderCircle, Minimiz
 import EditorToolbar from "@/components/editor-toolbar";
 import { useDiaryEntry } from "@/hooks/use-diary-entry";
 import { formatHeadingDate, fromDateKey } from "@/lib/dates";
+import { diaryTemplates, diaryTemplateMap } from "@/lib/templates";
 
 export default function DayEditorPage() {
   const params = useParams<{ date: string }>();
@@ -28,17 +28,12 @@ export default function DayEditorPage() {
   const [query, setQuery] = useState("");
   const [replacement, setReplacement] = useState("");
   const [tagInput, setTagInput] = useState("");
+  const [showTemplates, setShowTemplates] = useState(false);
   const prompts = ["What made today meaningful?", "What challenged you today?", "What are you grateful for?"];
-  const templates = {
-    blank: "",
-    reflection: "<h2>Today I noticed...</h2><p></p><h2>One thing I am grateful for...</h2><p></p>",
-    planning: "<h2>What I need to do</h2><ul><li></li></ul><h2>Tomorrow I want to...</h2><p></p>",
-  };
 
   const editor = useEditor({
     extensions: [
       StarterKit,
-      LinkExtension.configure({ openOnClick: false, autolink: true }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
       Highlight.configure({ multicolor: true }),
       TextStyle,
@@ -81,6 +76,15 @@ export default function DayEditorPage() {
     editor.commands.setContent(html);
   };
 
+  const applyTemplate = (templateId: string) => {
+    const template = diaryTemplateMap[templateId];
+    if (!template || !editor) return;
+    if (editor.getText().trim() && !window.confirm("This will replace the current page content. Continue?")) return;
+    editor.commands.setContent(template.content);
+    updateMetadata({ ...metadata, template: template.id });
+    setShowTemplates(false);
+  };
+
   if (!parsedDate) {
     return <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-5 py-16"><p className="eyebrow">Page not found</p><h1 className="display-title mt-4 text-5xl">That date is not valid.</h1><Link className="button button-primary mt-8 w-fit" href="/">Back to calendar</Link></main>;
   }
@@ -94,7 +98,9 @@ export default function DayEditorPage() {
       <div className="mb-6">
         <p className="eyebrow">Daily page</p>
         <h1 className="mt-2 font-serif text-4xl font-semibold tracking-[-0.04em] text-[var(--ink)] sm:text-5xl">{formatHeadingDate(parsedDate)}</h1>
+        <button type="button" className="template-launcher" onClick={() => setShowTemplates((value) => !value)}><BookOpen size={15} /> Choose a template</button>
       </div>
+      {showTemplates && <section className="template-panel paper-panel"><div className="flex items-start justify-between gap-4"><div><p className="eyebrow">Reusable pages</p><h2 className="mt-1 font-serif text-3xl font-semibold text-[var(--ink)]">Start with a shape.</h2></div><button type="button" className="button button-ghost" onClick={() => setShowTemplates(false)}>Close</button></div><div className="template-grid">{diaryTemplates.map((template) => <button type="button" className="template-card" key={template.id} onClick={() => applyTemplate(template.id)}><span className="template-category">{template.category}</span><strong>{template.name}</strong><small>{template.description}</small><span className="template-use">Use template <ArrowLeft size={13} /></span></button>)}</div></section>}
       <section className="paper-panel overflow-hidden">
         <div className="editor-options" data-theme={theme}>
           <span className="editor-option-label"><Eye size={14} /> Reading tone</span>
@@ -105,7 +111,7 @@ export default function DayEditorPage() {
           <label className="meta-field"><span>Mood</span><select value={metadata.mood ?? ""} onChange={(event) => updateMetadata({ ...metadata, mood: event.target.value || null })}><option value="">Choose mood</option><option>Joyful</option><option>Calm</option><option>Focused</option><option>Tired</option><option>Heavy</option></select></label>
           <label className="meta-field meta-field-wide"><span>Tags</span><input value={tagInput} placeholder="Add a tag and press Enter" onChange={(event) => setTagInput(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && tagInput.trim()) { event.preventDefault(); updateMetadata({ ...metadata, tags: [...new Set([...metadata.tags, tagInput.trim()])] }); setTagInput(""); } }} /><small>{metadata.tags.join(" · ") || "No tags yet"}</small></label>
           <label className="meta-field"><span>Prompt</span><select value={metadata.prompt ?? ""} onChange={(event) => updateMetadata({ ...metadata, prompt: event.target.value || null })}><option value="">No prompt</option>{prompts.map((prompt) => <option key={prompt}>{prompt}</option>)}</select></label>
-          <label className="meta-field"><span>Template</span><select value={metadata.template ?? "blank"} onChange={(event) => { const value = event.target.value as keyof typeof templates; updateMetadata({ ...metadata, template: value }); if (value !== "blank" && editor && !editor.getText().trim()) editor.commands.setContent(templates[value]); }}><option value="blank">Blank page</option><option value="reflection">Daily reflection</option><option value="planning">Planning page</option></select></label>
+            <label className="meta-field"><span>Template</span><button type="button" className="meta-select-button" onClick={() => setShowTemplates(true)}>{diaryTemplateMap[metadata.template ?? "blank"]?.name ?? "Blank page"}</button></label>
         </div>
         <EditorToolbar editor={editor} onSearch={() => { const next = window.prompt("Find text", query); if (next !== null) setQuery(next); }} onFocus={() => setFocusMode((value) => !value)} onLink={insertLink} />
         <div className="editor-wrap">
