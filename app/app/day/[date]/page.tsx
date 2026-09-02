@@ -15,6 +15,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import { ArrowLeft, BookOpen, Check, Eye, Expand, History, LoaderCircle, Minimize2, Save, Search } from "lucide-react";
 import EditorToolbar from "@/components/editor-toolbar";
 import AIWritingCompanion from "@/components/ai-writing-companion";
+import GuidedWriting from "@/components/guided-writing";
 import { useDiaryEntry } from "@/hooks/use-diary-entry";
 import { formatHeadingDate, fromDateKey } from "@/lib/dates";
 import { diaryTemplates, diaryTemplateMap } from "@/lib/templates";
@@ -30,6 +31,7 @@ export default function DayEditorPage() {
   const [replacement, setReplacement] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [showTemplates, setShowTemplates] = useState(false);
+  const [showGuidedWriting, setShowGuidedWriting] = useState(false);
   const [customTemplates, setCustomTemplates] = useState<{ id: string; name: string; description: string; category: string; content: string }[]>(() => {
     if (typeof window === "undefined") return [];
     return JSON.parse(window.localStorage.getItem("ust-diary-custom-templates") ?? "[]") as { id: string; name: string; description: string; category: string; content: string }[];
@@ -98,6 +100,14 @@ export default function DayEditorPage() {
     setShowTemplates(true);
   };
 
+  const saveCurrentPageAsTemplate = () => {
+    if (!editor?.getText().trim()) return;
+    const name = window.prompt("Template name", `${date} template`);
+    if (!name?.trim()) return;
+    const description = window.prompt("Template description", "Reusable questions from this diary page.") ?? "Reusable diary questions.";
+    saveCustomTemplate({ name: name.trim(), description, category: "Custom", content: editor.getHTML() });
+  };
+
   if (!parsedDate) {
     return <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-5 py-16"><p className="eyebrow">Page not found</p><h1 className="display-title mt-4 text-5xl">That date is not valid.</h1><Link className="button button-primary mt-8 w-fit" href="/">Back to calendar</Link></main>;
   }
@@ -111,7 +121,7 @@ export default function DayEditorPage() {
       <div className="mb-6">
         <p className="eyebrow">Daily page</p>
         <h1 className="mt-2 font-serif text-4xl font-semibold tracking-[-0.04em] text-[var(--ink)] sm:text-5xl">{formatHeadingDate(parsedDate)}</h1>
-        <button type="button" className="template-launcher" onClick={() => setShowTemplates((value) => !value)}><BookOpen size={15} /> Choose a template</button>
+        <div className="template-links"><button type="button" className="template-launcher" onClick={() => setShowTemplates((value) => !value)}><BookOpen size={15} /> Choose a template</button><button type="button" className="template-launcher" onClick={saveCurrentPageAsTemplate}><BookOpen size={15} /> Save page as template</button></div>
       </div>
       {showTemplates && <section className="template-panel paper-panel"><div className="flex items-start justify-between gap-4"><div><p className="eyebrow">Reusable pages</p><h2 className="mt-1 font-serif text-3xl font-semibold text-[var(--ink)]">Start with a shape.</h2></div><button type="button" className="button button-ghost" onClick={() => setShowTemplates(false)}>Close</button></div><div className="template-grid">{[...diaryTemplates, ...customTemplates].map((template) => <button type="button" className="template-card" key={template.id} onClick={() => applyTemplate(template.id)}><span className="template-category">{template.category}</span><strong>{template.name}</strong><small>{template.description}</small><span className="template-use">Use template <ArrowLeft size={13} /></span></button>)}</div></section>}
       <section className="paper-panel overflow-hidden">
@@ -126,7 +136,7 @@ export default function DayEditorPage() {
           <label className="meta-field"><span>Prompt</span><select value={metadata.prompt ?? ""} onChange={(event) => updateMetadata({ ...metadata, prompt: event.target.value || null })}><option value="">No prompt</option>{prompts.map((prompt) => <option key={prompt}>{prompt}</option>)}</select></label>
             <label className="meta-field"><span>Template</span><button type="button" className="meta-select-button" onClick={() => setShowTemplates(true)}>{diaryTemplateMap[metadata.template ?? "blank"]?.name ?? "Blank page"}</button></label>
         </div>
-        <div className="editor-action-row"><EditorToolbar editor={editor} onSearch={() => { const next = window.prompt("Find text", query); if (next !== null) setQuery(next); }} onFocus={() => setFocusMode((value) => !value)} onLink={insertLink} /><AIWritingCompanion editor={editor} onSaveTemplate={saveCustomTemplate} /></div>
+        <div className="editor-action-row"><EditorToolbar editor={editor} onSearch={() => { const next = window.prompt("Find text", query); if (next !== null) setQuery(next); }} onFocus={() => setFocusMode((value) => !value)} onLink={insertLink} /><AIWritingCompanion editor={editor} onSaveTemplate={saveCustomTemplate} onGuidedWriting={() => setShowGuidedWriting(true)} /></div>
         <div className="editor-wrap">
           {saveState === "loading" ? <div className="editor-loading">Opening your page...</div> : <EditorContent editor={editor} />}
         </div>
@@ -145,6 +155,7 @@ export default function DayEditorPage() {
           <button className="button button-primary" disabled={saveState === "loading" || saveState === "saving"} onClick={() => void save()}><Save size={16} /> Save</button>
         </footer>
       </section>
+      {showGuidedWriting && <GuidedWriting editor={editor} onClose={() => setShowGuidedWriting(false)} />}
       <p className="mt-4 text-center text-xs text-[var(--ink-faint)]">Your page saves automatically while you write.</p>
     </main>
   );

@@ -1,0 +1,313 @@
+1. AI Guided Conversation
+Instead of generating everything at once, AI asks one question at a time:
+
+What happened today?
+How did it affect you?
+What did you learn?
+What do you want to do tomorrow?
+At the end, it creates a complete diary entry for your approval.
+
+2. Custom Template Manager
+Allow users to:
+
+Create their own templates
+Rename templates
+Edit template questions
+Delete templates
+Duplicate templates
+Organize templates by category
+Save an existing diary entry as a template
+This is the natural next step after the current predefined template feature.
+
+3. Writing Streaks
+Add calendar and dashboard statistics:
+
+Current writing streak
+Longest streak
+Total entries
+Total words written
+Days written this month
+Monthly completion percentage
+Keep this subtle so the diary does not feel like a productivity competition.
+
+4. Mood Calendar
+Show mood colors directly on calendar days:
+
+Green: positive
+Blue: calm
+Yellow: focused
+Orange: tired
+Red: heavy or stressed
+Also show a monthly mood summary.
+
+5. Daily Reminders
+Add optional reminders:
+
+Write at a chosen time
+Reminder when today's page is empty
+Weekly reflection reminder
+Monthly review reminder
+For the first version, browser notifications are enough. Push notifications can come later.
+
+6. Entry Attachments
+Support:
+
+Images
+PDFs
+Screenshots
+Voice notes
+Small files
+For a diary, images and voice notes would be particularly valuable.
+
+7. Secure Private Mode
+Because diary content is sensitive, add:
+
+App lock with PIN
+Lock after inactivity
+Hide diary previews
+Private mode for selected entries
+Encrypted local draft storage
+Do not store a plain-text PIN. Use a secure hash or Web Crypto API.
+
+AI Features
+8. Weekly AI Review
+Generate an optional weekly report:
+
+What happened this week
+What went well
+What was difficult
+Repeated topics
+Unfinished tasks
+Suggested focus for next week
+Always show source dates so the user can verify the summary.
+
+9. Ask My Diary
+Let the user ask questions such as:
+
+“When did I last write about my exam?”
+“What has been taking most of my time?”
+“Which days did I feel productive?”
+“What goals have I mentioned?”
+“Show entries related to UST work.”
+The AI should answer only from diary entries and include linked dates.
+
+10. Automatic Task Extraction
+When the AI sees tasks, show:
+
+
+The user must approve each task.
+
+11. AI Writing Tone Controls
+Add actions such as:
+
+Keep my voice
+Make it clearer
+Make it more reflective
+Make it shorter
+Make it warmer
+Turn notes into paragraphs
+Keep the original wording
+Always preserve the original text for comparison.
+
+12. AI Safety and Privacy Settings
+Add settings for:
+
+Enable or disable AI
+Ask before sending text
+Send selected text only
+Never send the entire diary
+Delete AI request history
+Local-only mode
+Show exactly what will be sent
+This is especially important for personal writing.
+
+Diary Organization
+13. Favorites
+Allow users to mark meaningful entries as favorites.
+
+Add:
+
+Favorite button
+Favorites filter
+Favorite-only reading mode
+Favorite days highlighted on the calendar
+14. Better Tags
+Improve tags with:
+
+Suggested tags
+Tag colors
+Tag autocomplete
+Tag management page
+Tag-based calendar filter
+Most-used tags report
+15. Entry Navigation
+Add:
+
+Jump to first entry
+Jump to latest entry
+Previous written entry
+Next written entry
+Random memory
+“On this day” from previous years
+16. Multiple Views
+Add calendar display options:
+
+Month
+Week
+Timeline
+Entry list
+Mood view
+Writing activity view
+The month calendar should remain the default.
+
+17. Search Improvements
+Add:
+
+Search by date range
+Search by mood
+Search by tag
+Search only titles
+Search only tasks
+Search only favorite entries
+Exact phrase search
+Highlight matching words
+Book and Reading Experience
+18. Continuous Book Mode
+Read entries as one flowing book:
+
+
+Include a table of contents by month.
+
+19. Reading Themes
+Expand the current modes:
+
+Light
+Sepia
+Dark
+Night blue
+High contrast
+Large text
+Dyslexia-friendly spacing
+20. Book Cover
+Create a personal book cover with:
+
+Diary name
+Date range
+Number of entries
+Total words
+Favorite quote
+Custom color
+21. Export Improvements
+Support:
+
+PDF
+Markdown
+Plain text
+JSON backup
+Monthly export
+Date-range export
+Favorites-only export
+Full diary backup and restore
+Personal and Student Features
+22. UST Context
+Since this is for your personal UST life, add optional fields:
+
+Campus location
+Department
+Course or subject
+Exam
+Project
+Cafeteria visit
+Study duration
+Work duration
+These should be optional and editable, not forced into every entry.
+
+23. Study Log
+A study-focused template could track:
+
+Subject
+Topic
+Study duration
+What was understood
+What was difficult
+Next study step
+Exam date
+24. Workday Log
+Track:
+
+Work completed
+Meetings
+Problems
+Lessons learned
+Tomorrow's priorities
+Time wasted
+Energy level
+25. Goals and Tasks
+Add a separate task layer connected to diary entries:
+
+Task name
+Due date
+Completed state
+Source diary date
+Priority
+Related tag
+Technical Features
+26. Offline-First Support
+Allow users to continue writing without internet:
+
+Save locally immediately
+Sync when online
+Show pending sync status
+Resolve conflicts
+Retry failed saves
+27. Data Backup and Restore
+Allow exporting and importing all diary data as JSON.
+
+This protects against:
+
+Database loss
+Accidental deletion
+Migration errors
+Account changes
+28. Supabase Auth
+For a serious production version, add:
+
+Email login
+Magic links
+Google login
+Per-user entries
+Secure RLS using auth.uid()
+The current anonymous model is acceptable for testing but is not suitable for a private diary shared across devices.
+
+29. PWA Installation
+Make the diary installable:
+
+Add to desktop/mobile home screen
+Offline shell
+App icon
+Splash screen
+Standalone app mode
+30. Performance and Reliability
+Add:
+
+Loading skeletons
+Retry buttons
+Network status indicator
+Autosave queue
+Request cancellation
+Optimistic updates
+Error logging
+Database indexes for search and date filtering
+Recommended Order
+I would build the next features in this order:
+
+Custom template manager
+Guided AI conversation
+Writing streaks and statistics
+Mood calendar
+Favorites
+JSON backup and restore
+Offline-first saving
+Weekly AI review
+Images and voice notes
+Secure authentication and private mode
