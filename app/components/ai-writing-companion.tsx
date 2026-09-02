@@ -5,13 +5,14 @@ import { Bot, Check, Copy, LoaderCircle, MessageCircle, Sparkles, X } from "luci
 import type { Editor } from "@tiptap/react";
 import { diaryTemplateMap } from "@/lib/templates";
 
-type Action = "start" | "guided" | "diary-entry" | "improve" | "organize" | "create-template" | "convert-template" | "recommend-template";
+type Action = "start" | "guided" | "diary-entry" | "expand" | "improve" | "organize" | "create-template" | "convert-template" | "recommend-template";
 type Props = { editor: Editor | null; onSaveTemplate: (template: { name: string; description: string; category: string; content: string }) => void; onGuidedWriting: () => void };
 
 const actions: { id: Action; label: string }[] = [
   { id: "start", label: "Help me start" },
   { id: "guided", label: "Guided writing" },
   { id: "diary-entry", label: "Turn notes into diary" },
+  { id: "expand", label: "Expand writing" },
   { id: "improve", label: "Improve selection" },
   { id: "organize", label: "Organize my notes" },
   { id: "create-template", label: "Create a template" },

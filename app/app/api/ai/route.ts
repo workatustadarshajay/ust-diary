@@ -2,7 +2,7 @@ import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
 import { NextResponse } from "next/server";
 
-type Action = "start" | "guided" | "guided-question" | "guided-entry" | "diary-entry" | "improve" | "organize" | "create-template" | "convert-template" | "recommend-template";
+type Action = "start" | "guided" | "guided-question" | "guided-entry" | "diary-entry" | "expand" | "improve" | "organize" | "create-template" | "convert-template" | "recommend-template";
 
 const actions: Record<Action, string> = {
   start: "Suggest three gentle opening prompts for this diary context. Return only a numbered list.",
@@ -10,6 +10,7 @@ const actions: Record<Action, string> = {
   "guided-question": "Ask exactly one gentle diary question. Ask the next question in this order: what happened today, how did it affect you, what did you learn, what do you want to do tomorrow. Use the answers already provided to choose the next unanswered question. Return only the question.",
   "guided-entry": "Create a polished first-person diary entry from the guided answers. Keep every fact, preserve the user's voice, and do not invent details. Return valid HTML using one h2 heading and natural p paragraphs only.",
   "diary-entry": "Turn the casual notes into a polished first-person diary entry. The writer works and studies at UST, so preserve UST context when it appears or is relevant. Keep every fact from the notes, do not invent details, and use valid HTML with a short h2 heading followed by natural first-person paragraphs. Return only the HTML.",
+  expand: "Expand this short diary writing into a richer, longer first-person entry. Preserve every original fact, meaning, uncertainty, and the user's voice. Add detail only by explaining or connecting what is already present. Never invent events, people, feelings, places, or facts. Return valid HTML using one h2 heading and natural p paragraphs only.",
   improve: "Improve the selected writing for clarity while preserving meaning, voice, and facts. Return only the revised text.",
   organize: "Organize these rough notes into clear diary sections with headings and paragraphs. Return valid HTML using only h2, p, ul, ol, and li.",
   "create-template": "Create a reusable diary template from the request. Return JSON with name, description, category, and content fields. content must be valid HTML using h2, p, ul, ol, and li.",
