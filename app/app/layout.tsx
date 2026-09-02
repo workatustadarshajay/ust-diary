@@ -34,6 +34,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             <Link href="/search">Search</Link>
             <Link href="/templates">Templates</Link>
             <Link href="/print">Print</Link>
+            <Link href="/weekly-review">Review</Link>
+            <Link href="/ask">Ask</Link>
           </nav>
         </header>
         {children}

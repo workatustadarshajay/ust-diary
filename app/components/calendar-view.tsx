@@ -18,7 +18,7 @@ export default function CalendarView() {
   const router = useRouter();
   const today = useMemo(() => new Date(), []);
   const [month, setMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-  const [entryDates, setEntryDates] = useState<Set<string>>(new Set());
+  const [entries, setEntries] = useState<{ entry_date: string; content: string; mood: string | null }[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [stats, setStats] = useState({ currentStreak: 0, longestStreak: 0, totalEntries: 0, totalWords: 0, monthDays: 0 });
   const days = useMemo(() => getMonthGrid(month), [month]);
@@ -28,7 +28,7 @@ export default function CalendarView() {
     async function loadEntries() {
       const { data, error: queryError } = await supabase
         .from("diary_entries")
-        .select("entry_date, content")
+        .select("entry_date, content, mood")
         .eq("user_id", USER_ID)
         .order("entry_date", { ascending: true });
 
@@ -38,7 +38,7 @@ export default function CalendarView() {
         return;
       }
       setError(null);
-      setEntryDates(new Set((data ?? []).map((entry) => entry.entry_date)));
+      setEntries(data ?? []);
       const all = [...(data ?? [])].sort((a, b) => a.entry_date.localeCompare(b.entry_date));
       const dates = new Set(all.map((entry) => entry.entry_date));
       let currentStreak = 0;
@@ -107,22 +107,23 @@ export default function CalendarView() {
             const key = toDateKey(day);
             const isCurrentMonth = isSameCalendarMonth(day, month);
             const isToday = isSameDay(day, today);
-            const hasEntry = entryDates.has(key);
+            const entry = entries.find((item) => item.entry_date === key);
+            const hasEntry = Boolean(entry);
             return (
               <button
                 key={key}
                 aria-label={`Write for ${key}`}
                 onClick={() => router.push(`/day/${key}`)}
-                className={`day-cell ${isCurrentMonth ? "" : "day-cell-muted"} ${isToday ? "day-cell-today" : ""}`}
+                className={`day-cell ${isCurrentMonth ? "" : "day-cell-muted"} ${isToday ? "day-cell-today" : ""} ${entry?.mood ? `mood-${entry.mood.toLowerCase()}` : ""}`}
               >
                 <span>{day.getDate()}</span>
-                {hasEntry && <span className="entry-dot" aria-label="Has entry" />}
+                {hasEntry && <span className="entry-dot" aria-label={entry?.mood ? `Has entry, mood: ${entry.mood}` : "Has entry"} />}
               </button>
             );
           })}
         </div>
       </section>
-      <p className="mt-5 text-center text-xs text-[var(--ink-faint)]">Select any date to open its page.</p>
+      <div className="mood-summary"><span className="eyebrow">This month in color</span>{["Joyful", "Calm", "Focused", "Tired", "Heavy"].map((mood) => <span key={mood} className={`mood-key mood-${mood.toLowerCase()}`}><i /> {mood} {entries.filter((entry) => entry.mood === mood && entry.entry_date.startsWith(`${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, "0")}`)).length}</span>)}</div><p className="mt-5 text-center text-xs text-[var(--ink-faint)]">Select any date to open its page.</p>
     </main>
   );
 }
